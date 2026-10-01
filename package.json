@@ -1,0 +1,11 @@
+{
+  "name": "vku-ocr-expense-tracker",
+  "version": "1.0.0",
+  "description": "Mini-Project 3: OCR Expense Tracker & Receipt Parser (Flutter & Dart + Canvas Simulator)",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-verification.js"
+  },
+  "author": "Tran Dinh Nhut - 23IT203",
+  "license": "Apache-2.0"
+}
