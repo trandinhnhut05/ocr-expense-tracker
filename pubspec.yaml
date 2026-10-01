@@ -1,0 +1,43 @@
+name: ocr_expense_tracker
+description: "Mini-Project 3: OCR Expense Tracker & Receipt Parser in Flutter & Dart with Google ML Kit, SQLite, Regex Heuristics, and CustomPainter Charts."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Icons
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+
+  # State Management
+  provider: ^6.1.1
+
+  # Local Database Persistence (SQLite)
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  path_provider: ^2.1.1
+
+  # On-Device Machine Learning OCR
+  google_mlkit_text_recognition: ^0.11.0
+  camera: ^0.10.5+9
+  image_picker: ^1.0.7
+
+  # Utilities & Formatting
+  intl: ^0.19.0
+  uuid: ^4.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sample_receipts/

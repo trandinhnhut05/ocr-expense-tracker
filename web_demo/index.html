@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VKU OCR Expense Tracker & Receipt Parser | Live Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1>VKU OCR Expense Tracker & Parser</h1>
+          <p class="subtitle">Mini-Project 3 • Flutter & Dart • Trần Đình Nhứt (23IT203)</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge on-device-badge">
+          <span class="dot"></span> On-Device AI Heuristic
+        </span>
+        <span class="badge vku-badge">Khoa KHMT • VKU</span>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <!-- Left Column: CustomPainter Visualizer (Donut Pie Chart & Bar Chart) -->
+      <section class="panel chart-panel">
+        <div class="panel-header">
+          <div class="tabs">
+            <button id="tabPie" class="tab-btn active" onclick="switchChartTab('pie')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+              Cơ Cấu Danh Mục (Donut)
+            </button>
+            <button id="tabBar" class="tab-btn" onclick="switchChartTab('bar')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Xu Hướng Chi Tiêu (Bar Chart)
+            </button>
+          </div>
+          <span class="painter-tag">CustomPainter Canvas Engine</span>
+        </div>
+
+        <!-- CustomPainter Canvas Container -->
+        <div class="canvas-wrapper">
+          <div id="pieContainer" class="chart-view">
+            <canvas id="pieCanvas" width="380" height="340"></canvas>
+            <div id="chartTooltip" class="chart-tooltip"></div>
+          </div>
+
+          <div id="barContainer" class="chart-view" style="display: none;">
+            <div class="bar-controls">
+              <span class="bar-title">Lịch sử chi tiêu qua các kỳ</span>
+              <div class="pill-group">
+                <button class="pill-btn active" id="btnMonthly" onclick="setBarMode('monthly')">6 Tháng</button>
+                <button class="pill-btn" id="btnWeekly" onclick="setBarMode('weekly')">7 Ngày</button>
+              </div>
+            </div>
+            <canvas id="barCanvas" width="540" height="280"></canvas>
+          </div>
+        </div>
+
+        <!-- Interactive Legend -->
+        <div class="legend-container" id="legendContainer"></div>
+
+        <!-- Monthly Budget Metric Bar -->
+        <div class="budget-card">
+          <div class="budget-row">
+            <span>Tiến độ ngân sách tháng (8.000.000 ₫)</span>
+            <strong id="budgetRatioText">1.472.000 ₫ (18.4%)</strong>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="budgetProgressFill" style="width: 18.4%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Interactive OCR Scanner & Regex Parser Simulator -->
+      <section class="panel ocr-panel">
+        <div class="panel-header">
+          <h2>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            Bộ Phân Tích OCR & Regex Heuristics
+          </h2>
+          <span class="status-badge" id="aiConfidenceBadge">Độ tin cậy: 95%</span>
+        </div>
+
+        <!-- Sample presets -->
+        <div class="presets-section">
+          <label>Mẫu Hóa Đơn Trắc Nghiệm:</label>
+          <div class="presets-scroll">
+            <button class="preset-chip active" onclick="loadSample(0)">Highlands Coffee</button>
+            <button class="preset-chip" onclick="loadSample(1)">WinMart+ Siêu Thị</button>
+            <button class="preset-chip" onclick="loadSample(2)">Nhà Sách Fahasa</button>
+            <button class="preset-chip" onclick="loadSample(3)">Circle K</button>
+            <button class="preset-chip" onclick="loadSample(4)">Grab Rides</button>
+            <button class="preset-chip" onclick="loadSample(5)">CGV Cinemas</button>
+            <button class="preset-chip" onclick="loadSample(6)">EVN Điện Lực</button>
+            <button class="preset-chip" onclick="loadSample(7)">Nhà Thuốc Long Châu</button>
+          </div>
+        </div>
+
+        <!-- Raw Textarea Input -->
+        <div class="input-section">
+          <div class="input-header">
+            <span>Văn bản OCR nhận diện được từ Google ML Kit:</span>
+            <button class="btn-parse" onclick="triggerParse()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Chạy Regex Parser
+            </button>
+          </div>
+          <textarea id="rawOcrInput" rows="7" placeholder="Dán văn bản hóa đơn vào đây..."></textarea>
+        </div>
+
+        <!-- Extracted Structured Result Cards -->
+        <div class="results-grid">
+          <div class="res-card">
+            <span class="res-label">Đơn Vị Bán (Merchant)</span>
+            <strong class="res-val" id="resMerchant">Highlands Coffee</strong>
+            <span class="res-sub" id="resMerchantSub">Khớp từ điển thương hiệu</span>
+          </div>
+
+          <div class="res-card highlight">
+            <span class="res-label">Tổng Tiền (Total Amount)</span>
+            <strong class="res-val" id="resAmount">129.000 ₫</strong>
+            <span class="res-sub" id="resAmountSub">TỔNG CỘNG keyword</span>
+          </div>
+
+          <div class="res-card">
+            <span class="res-label">Ngày Giao Dịch (Date)</span>
+            <strong class="res-val" id="resDate">01/10/2026</strong>
+            <span class="res-sub">Chuẩn DD/MM/YYYY</span>
+          </div>
+
+          <div class="res-card">
+            <span class="res-label">Phân Loại Gợi Ý</span>
+            <strong class="res-val" id="resCategory">Ăn uống & Cà phê</strong>
+            <span class="res-sub">Category: food</span>
+          </div>
+        </div>
+
+        <!-- Parsing Log & Diagnostics -->
+        <div class="diagnostics-box">
+          <div class="diag-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Nhật Ký Heuristic Regex:
+          </div>
+          <ul id="diagLogs"></ul>
+        </div>
+
+        <!-- Add to Expense List Action -->
+        <button class="btn-add-expense" onclick="addParsedToExpenses()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Thêm Khoản Chi Này Vào Biểu Đồ & Sổ Lưu Trữ
+        </button>
+      </section>
+    </div>
+
+    <!-- Bottom Expense Transactions Table -->
+    <section class="panel transactions-panel">
+      <div class="panel-header">
+        <h2>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          Danh Sách Giao Dịch Đã Lưu Trữ (SQLite Simulation)
+        </h2>
+        <span class="count-badge" id="txCount">8 giao dịch</span>
+      </div>
+      <div class="table-responsive">
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>Thời Gian</th>
+              <th>Tiêu Đề / Đơn Vị</th>
+              <th>Danh Mục</th>
+              <th>Số Tiền</th>
+              <th>Phương Thức</th>
+              <th>Độ Tin Cậy</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="txTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
