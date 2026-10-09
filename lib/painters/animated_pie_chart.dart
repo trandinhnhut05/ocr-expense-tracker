@@ -162,7 +162,7 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
                       ? seg.category.color.withOpacity(0.25)
                       : const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.Border.all(
+                  border: Border.all(
                     color: isSelected ? seg.category.color : Colors.white10,
                     width: isSelected ? 1.5 : 1.0,
                   ),

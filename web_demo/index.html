@@ -2,52 +2,147 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VKU OCR Expense Tracker & Receipt Parser | Live Simulator</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>VKU OCR Expense & Finance Manager</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#070b14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
   <div class="app-layout">
-    <!-- Header -->
+    <!-- Top Header -->
     <header class="app-header">
       <div class="brand">
         <div class="logo-box">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
         </div>
         <div>
-          <h1>VKU OCR Expense Tracker & Parser</h1>
-          <p class="subtitle">Mini-Project 3 • Flutter & Dart • Trần Đình Nhứt (23IT203)</p>
+          <h1>VKU Expense & Finance Manager</h1>
+          <p class="subtitle">Đồ án Quản lý Tài chính Thông minh • Flutter & AI • Trần Đình Nhứt (23IT203)</p>
         </div>
       </div>
       <div class="header-badges">
         <span class="badge on-device-badge">
-          <span class="dot"></span> On-Device AI Heuristic
+          <span class="dot"></span> AI OCR + NLP
         </span>
         <span class="badge vku-badge">Khoa KHMT • VKU</span>
       </div>
     </header>
 
+    <!-- 1. Top Dashboard Financial Metrics -->
+    <section class="metrics-grid">
+      <div class="metric-card metric-balance">
+        <div class="metric-label">
+          <span>Tổng Số Dư Hiện Tại</span>
+          <div class="metric-icon">💰</div>
+        </div>
+        <div class="metric-val" id="dashTotalBalance">15.820.000 ₫</div>
+        <div class="metric-sub">Đồng bộ 3 ví tiền</div>
+      </div>
+
+      <div class="metric-card metric-income">
+        <div class="metric-label">
+          <span>Tổng Thu Trong Tháng</span>
+          <div class="metric-icon">📈</div>
+        </div>
+        <div class="metric-val" id="dashTotalIncome">+18.500.000 ₫</div>
+        <div class="metric-sub">Lương & Thu nhập phụ</div>
+      </div>
+
+      <div class="metric-card metric-expense">
+        <div class="metric-label">
+          <span>Tổng Chi Trong Tháng</span>
+          <div class="metric-icon">📉</div>
+        </div>
+        <div class="metric-val" id="dashTotalExpense">-2.680.000 ₫</div>
+        <div class="metric-sub" id="dashExpenseSub">Đã dùng 33.5% ngân sách</div>
+      </div>
+
+      <div class="metric-card metric-budget">
+        <div class="metric-label">
+          <span>Ngân Sách Còn Lại</span>
+          <div class="metric-icon">🎯</div>
+        </div>
+        <div class="metric-val" id="dashRemainingBudget">5.320.000 ₫</div>
+        <div class="metric-sub">Hạn mức tháng: 8.000.000 ₫</div>
+      </div>
+    </section>
+
+    <!-- 2. AI NLP Natural Language Quick Input Bar -->
+    <section class="nlp-section">
+      <div class="nlp-header">
+        <div class="nlp-title">
+          <span class="sparkle-icon">✨</span>
+          <strong>AI Nhập Giao Dịch Bằng Ngôn Ngữ Tự Nhiên (NLP):</strong>
+        </div>
+        <div class="nlp-actions">
+          <button class="btn-quick-action" onclick="openAddModal('expense')">+ Khoản Chi</button>
+          <button class="btn-quick-action success" onclick="openAddModal('income')">+ Khoản Thu</button>
+          <button class="btn-quick-action warning" onclick="openTransferModal()">⇄ Chuyển Ví</button>
+        </div>
+      </div>
+      <div class="nlp-input-wrapper">
+        <input type="text" id="nlpInput" placeholder="Ví dụ: Ăn trưa 45k tiền mặt, hoặc Nhận lương 15tr vào ngân hàng, Đổ xăng 50k..." onkeydown="if(event.key==='Enter') executeNlpInput()">
+        <button class="btn-nlp-run" onclick="executeNlpInput()">
+          <span>Bóc Tách & Thêm</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+      <div class="nlp-chips">
+        <span class="nlp-chip-hint">Gợi ý mẫu:</span>
+        <button class="nlp-chip" onclick="setNlpText('Ăn bún bò 45k tiền mặt')">🍜 Ăn bún bò 45k tiền mặt</button>
+        <button class="nlp-chip" onclick="setNlpText('Đổ xăng 60k ví Momo')">⛽ Đổ xăng 60k Momo</button>
+        <button class="nlp-chip" onclick="setNlpText('Nhận lương part-time 3.5tr vào ngân hàng')">💵 Lương 3.5tr ngân hàng</button>
+        <button class="nlp-chip" onclick="setNlpText('Chuyển 500k từ ngân hàng sang Momo')">⇄ Chuyển 500k từ VCB sang Momo</button>
+      </div>
+      <div id="nlpFeedback" class="nlp-feedback" style="display: none;"></div>
+    </section>
+
+    <!-- Mobile Segmented Navigation Bar -->
+    <nav class="mobile-segmented-nav" id="mobileNav">
+      <button class="mobile-nav-btn active" id="mobTabCharts" onclick="switchMobileSection('charts')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+        <span>Tổng Quan</span>
+      </button>
+      <button class="mobile-nav-btn" id="mobTabOcr" onclick="switchMobileSection('ocr')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <span>Quét OCR</span>
+      </button>
+      <button class="mobile-nav-btn" id="mobTabHistory" onclick="switchMobileSection('history')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+        <span>Lịch Sử</span>
+      </button>
+    </nav>
+
     <div class="main-content">
-      <!-- Left Column: CustomPainter Visualizer (Donut Pie Chart & Bar Chart) -->
-      <section class="panel chart-panel">
-        <div class="panel-header">
+      <!-- Left Column: Visualizer & Multi-Wallets & Budgets -->
+      <section class="panel chart-panel" id="panelCharts">
+        <!-- 3. Multi-Wallets Overview -->
+        <div class="wallets-section">
+          <div class="section-title-row">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+              Ví & Tài Khoản Thanh Toán
+            </h3>
+            <button class="btn-xs" onclick="openTransferModal()">⇄ Chuyển Giữa Các Ví</button>
+          </div>
+          <div class="wallets-grid" id="walletsContainer"></div>
+        </div>
+
+        <!-- Charts Selector -->
+        <div class="panel-header" style="margin-top: 10px;">
           <div class="tabs">
             <button id="tabPie" class="tab-btn active" onclick="switchChartTab('pie')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-              Cơ Cấu Danh Mục (Donut)
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+              Cơ Cấu (Donut)
             </button>
             <button id="tabBar" class="tab-btn" onclick="switchChartTab('bar')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-              Xu Hướng Chi Tiêu (Bar Chart)
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Xu Hướng (Bar)
             </button>
           </div>
           <span class="painter-tag">CustomPainter Canvas Engine</span>
@@ -56,19 +151,19 @@
         <!-- CustomPainter Canvas Container -->
         <div class="canvas-wrapper">
           <div id="pieContainer" class="chart-view">
-            <canvas id="pieCanvas" width="380" height="340"></canvas>
+            <canvas id="pieCanvas" width="280" height="280"></canvas>
             <div id="chartTooltip" class="chart-tooltip"></div>
           </div>
 
           <div id="barContainer" class="chart-view" style="display: none;">
             <div class="bar-controls">
-              <span class="bar-title">Lịch sử chi tiêu qua các kỳ</span>
+              <span class="bar-title">Lịch sử thu - chi qua các kỳ</span>
               <div class="pill-group">
                 <button class="pill-btn active" id="btnMonthly" onclick="setBarMode('monthly')">6 Tháng</button>
                 <button class="pill-btn" id="btnWeekly" onclick="setBarMode('weekly')">7 Ngày</button>
               </div>
             </div>
-            <canvas id="barCanvas" width="540" height="280"></canvas>
+            <canvas id="barCanvas" width="480" height="260"></canvas>
           </div>
         </div>
 
@@ -85,10 +180,45 @@
             <div class="progress-fill" id="budgetProgressFill" style="width: 18.4%;"></div>
           </div>
         </div>
+
+        <!-- Category Budgets & Overspending Alerts -->
+        <div class="category-budgets-section">
+          <div class="category-budgets-header">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              Hạn Mức Ngân Sách Danh Mục
+            </span>
+            <span class="budget-alert-badge" id="budgetAlertSummary">An toàn (0 cảnh báo)</span>
+          </div>
+          <div class="category-budgets-list" id="categoryBudgetsList"></div>
+        </div>
+
+        <!-- 4. Savings Goals Section -->
+        <div class="savings-goals-section">
+          <div class="section-title-row">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+              Mục Tiêu Tiết Kiệm (Savings Goals)
+            </h3>
+            <span class="status-badge">3 Mục Tiêu</span>
+          </div>
+          <div class="savings-list" id="savingsContainer"></div>
+        </div>
+
+        <!-- 5. AI Financial Insights Card -->
+        <div class="ai-insights-card">
+          <div class="ai-insights-header">
+            <span class="sparkle-icon">💡</span>
+            <strong>AI Trợ Lý Tài Chính Thông Minh:</strong>
+          </div>
+          <div class="ai-insights-body" id="aiInsightsText">
+            Đang phân tích thói quen tài chính...
+          </div>
+        </div>
       </section>
 
       <!-- Right Column: Interactive OCR Scanner & Regex Parser Simulator -->
-      <section class="panel ocr-panel">
+      <section class="panel ocr-panel" id="panelOcr">
         <div class="panel-header">
           <h2>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
@@ -97,9 +227,56 @@
           <span class="status-badge" id="aiConfidenceBadge">Độ tin cậy: 95%</span>
         </div>
 
+        <!-- 📸 REAL RECEIPT SCANNER & CAMERA CAPTURE -->
+        <div class="real-scanner-box">
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleReceiptImage(event)">
+          <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleReceiptImage(event)">
+
+          <div class="scanner-dropzone" id="scannerDropzone">
+            <div class="scanner-dropzone-content" id="dropzonePrompt">
+              <div class="camera-icon-circle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              </div>
+              <div class="scanner-text-group">
+                <h4>Quét Hóa Đơn Thực Tế Bằng Camera / Ảnh Chụp</h4>
+                <p>Chụp ảnh trực tiếp từ camera điện thoại hoặc tải ảnh từ thư viện để AI OCR bóc tách</p>
+              </div>
+              <div class="scanner-btn-group">
+                <button type="button" class="btn-scan-camera" onclick="triggerCameraCapture()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <span>Chụp Bằng Camera</span>
+                </button>
+                <button type="button" class="btn-scan-gallery" onclick="triggerFileSelect()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  <span>Chọn Ảnh Thư Viện</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Image Preview & Laser Scan Animation -->
+            <div class="receipt-preview-container" id="receiptPreviewContainer" style="display: none;">
+              <div class="preview-img-wrapper">
+                <img id="receiptPreviewImg" alt="Receipt Preview">
+                <div class="laser-scanner-line" id="laserScannerLine"></div>
+              </div>
+              <div class="scan-overlay-info" id="scanOverlayInfo">
+                <div class="scan-spinner" id="scanSpinner"></div>
+                <div class="scan-status-text-row">
+                  <span id="scanStatusText">Đang tiền xử lý hình ảnh...</span>
+                  <span id="scanProgressText">0%</span>
+                </div>
+                <div class="scan-progress-bar">
+                  <div class="scan-progress-fill" id="scanProgressFill" style="width: 0%;"></div>
+                </div>
+              </div>
+              <button type="button" class="btn-retake" onclick="resetScanner(event)">✕ Chụp / Tải ảnh khác</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Sample presets -->
         <div class="presets-section">
-          <label>Mẫu Hóa Đơn Trắc Nghiệm:</label>
+          <label>Hoặc Chọn Mẫu Hóa Đơn Trắc Nghiệm Có Sẵn:</label>
           <div class="presets-scroll">
             <button class="preset-chip active" onclick="loadSample(0)">Highlands Coffee</button>
             <button class="preset-chip" onclick="loadSample(1)">WinMart+ Siêu Thị</button>
@@ -109,6 +286,7 @@
             <button class="preset-chip" onclick="loadSample(5)">CGV Cinemas</button>
             <button class="preset-chip" onclick="loadSample(6)">EVN Điện Lực</button>
             <button class="preset-chip" onclick="loadSample(7)">Nhà Thuốc Long Châu</button>
+            <button class="preset-chip" onclick="loadSample(8)">BIDV Chuyển Khoản</button>
           </div>
         </div>
 
@@ -126,66 +304,94 @@
 
         <!-- Extracted Structured Result Cards -->
         <div class="results-grid">
-          <div class="res-card">
-            <span class="res-label">Đơn Vị Bán (Merchant)</span>
-            <strong class="res-val" id="resMerchant">Highlands Coffee</strong>
-            <span class="res-sub" id="resMerchantSub">Khớp từ điển thương hiệu</span>
+          <div class="res-card clickable-card" onclick="editParsedField('merchant')" title="Bấm vào đây để sửa tên cửa hàng / ngân hàng">
+            <span class="res-label">Cửa Hàng / Đơn Vị ✎</span>
+            <span class="res-val" id="resMerchant">---</span>
           </div>
-
-          <div class="res-card highlight">
-            <span class="res-label">Tổng Tiền (Total Amount)</span>
-            <strong class="res-val" id="resAmount">129.000 ₫</strong>
-            <span class="res-sub" id="resAmountSub">TỔNG CỘNG keyword</span>
+          <div class="res-card highlight clickable-card" onclick="editParsedField('amount')" title="Bấm vào đây để sửa số tiền">
+            <span class="res-label">Tổng Tiền Trích Xuất ✎</span>
+            <span class="res-val" id="resAmount">0 ₫</span>
           </div>
-
-          <div class="res-card">
-            <span class="res-label">Ngày Giao Dịch (Date)</span>
-            <strong class="res-val" id="resDate">01/10/2026</strong>
-            <span class="res-sub">Chuẩn DD/MM/YYYY</span>
+          <div class="res-card clickable-card" onclick="editParsedField('date')" title="Bấm vào đây để sửa ngày giao dịch">
+            <span class="res-label">Ngày Hóa Đơn ✎</span>
+            <span class="res-val" id="resDate">--/--/----</span>
           </div>
-
-          <div class="res-card">
-            <span class="res-label">Phân Loại Gợi Ý</span>
-            <strong class="res-val" id="resCategory">Ăn uống & Cà phê</strong>
-            <span class="res-sub">Category: food</span>
+          <div class="res-card clickable-card" onclick="editParsedField('category')" title="Bấm vào đây để đổi danh mục">
+            <span class="res-label">Danh Mục Đề Xuất ✎</span>
+            <span class="res-val" id="resCategory">---</span>
           </div>
         </div>
-
-        <!-- Parsing Log & Diagnostics -->
-        <div class="diagnostics-box">
-          <div class="diag-header">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            Nhật Ký Heuristic Regex:
-          </div>
-          <ul id="diagLogs"></ul>
+        <div style="font-size: 11px; color: #94a3b8; text-align: right; margin-top: -6px; margin-bottom: 12px;">
+          💡 <em>Mẹo: Bạn có thể bấm trực tiếp vào các thẻ trên (✎) để chỉnh sửa giá trị nhanh</em>
         </div>
 
-        <!-- Add to Expense List Action -->
+        <!-- Action Button: Add to Transactions -->
         <button class="btn-add-expense" onclick="addParsedToExpenses()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          Thêm Khoản Chi Này Vào Biểu Đồ & Sổ Lưu Trữ
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Xác Nhận & Lưu Vào Sổ Giao Dịch
         </button>
+
+        <!-- Diagnostics Logs Section -->
+        <div class="diagnostics-section">
+          <div class="diag-header">
+            <span>Nhật Ký Suy Diễn Regex Heuristics (Explainable AI):</span>
+          </div>
+          <ul class="diag-logs" id="diagLogs"></ul>
+        </div>
       </section>
     </div>
 
     <!-- Bottom Expense Transactions Table -->
-    <section class="panel transactions-panel">
+    <section class="panel transactions-panel" id="panelTransactions">
       <div class="panel-header">
         <h2>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-          Danh Sách Giao Dịch Đã Lưu Trữ (SQLite Simulation)
+          Sổ Giao Dịch Thu - Chi (SQLite Simulation)
         </h2>
         <span class="count-badge" id="txCount">8 giao dịch</span>
       </div>
+
+      <!-- Search Bar, Date Filters, Type Filters & Export Action Toolbar -->
+      <div class="tx-toolbar">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="txSearchInput" placeholder="Tìm kiếm theo tên, cửa hàng, số tiền..." oninput="onSearchChange(this.value)">
+          <button id="btnClearSearch" class="btn-clear" onclick="clearSearch()" style="display: none;">✕</button>
+        </div>
+
+        <div class="filter-actions-row">
+          <div class="date-filters">
+            <button class="filter-btn active" id="fAll" onclick="setDateFilter('all')">Tất Cả</button>
+            <button class="filter-btn" id="fToday" onclick="setDateFilter('today')">Hôm Nay</button>
+            <button class="filter-btn" id="f7Days" onclick="setDateFilter('7days')">7 Ngày</button>
+            <button class="filter-btn" id="f30Days" onclick="setDateFilter('30days')">Tháng Này</button>
+          </div>
+
+          <div class="type-filters">
+            <button class="type-btn active" id="tfAll" onclick="setTypeFilter('all')">Toàn Bộ</button>
+            <button class="type-btn" id="tfExpense" onclick="setTypeFilter('expense')">🔴 Chi Tiêu</button>
+            <button class="type-btn" id="tfIncome" onclick="setTypeFilter('income')">🟢 Thu Nhập</button>
+            <button class="type-btn" id="tfTransfer" onclick="setTypeFilter('transfer')">⇄ Chuyển Ví</button>
+          </div>
+
+          <button class="btn-export-csv" onclick="exportExpensesToCSV()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Xuất Excel (CSV)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop Wide Data Table -->
       <div class="table-responsive">
         <table class="tx-table">
           <thead>
             <tr>
               <th>Thời Gian</th>
+              <th>Loại</th>
               <th>Tiêu Đề / Đơn Vị</th>
               <th>Danh Mục</th>
+              <th>Ví Tiền</th>
               <th>Số Tiền</th>
-              <th>Phương Thức</th>
               <th>Độ Tin Cậy</th>
               <th>Hành Động</th>
             </tr>
@@ -193,9 +399,135 @@
           <tbody id="txTableBody"></tbody>
         </table>
       </div>
+      <!-- Mobile Native Card List -->
+      <div class="mobile-tx-cards" id="mobileTxCards"></div>
     </section>
   </div>
 
+  <!-- MODAL 1: Chuyển Tiền Giữa Các Ví -->
+  <div class="modal-overlay" id="transferModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⇄ Chuyển Tiền Giữa Các Ví</h3>
+        <button class="btn-close-modal" onclick="closeTransferModal()">✕</button>
+      </div>
+      <p class="modal-desc">Chuyển tiền nội bộ giữa các tài khoản của bạn. <em>Khoản chuyển này sẽ không tính vào Thu nhập hoặc Chi tiêu.</em></p>
+      
+      <div class="form-group">
+        <label>Ví Nguồn (Trừ tiền):</label>
+        <select id="selFromWallet">
+          <option value="bank">Tài khoản VCB / MB</option>
+          <option value="cash">Tiền mặt</option>
+          <option value="momo">Ví MoMo</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Ví Đích (Nhận tiền):</label>
+        <select id="selToWallet">
+          <option value="momo">Ví MoMo</option>
+          <option value="cash">Tiền mặt</option>
+          <option value="bank">Tài khoản VCB / MB</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Số Tiền Chuyển (VNĐ):</label>
+        <input type="number" id="inpTransferAmount" placeholder="Ví dụ: 500000" min="1000">
+      </div>
+
+      <div class="form-group">
+        <label>Ghi Chú:</label>
+        <input type="text" id="inpTransferNotes" placeholder="Ví dụ: Nạp tiền MoMo đi chợ">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeTransferModal()">Hủy</button>
+        <button class="btn-primary" onclick="submitTransfer()">Xác Nhận Chuyển Tiền</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Thêm Giao Dịch Mới (Thu / Chi) -->
+  <div class="modal-overlay" id="addTxModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="addTxModalTitle">+ Thêm Giao Dịch</h3>
+        <button class="btn-close-modal" onclick="closeAddModal()">✕</button>
+      </div>
+
+      <div class="tx-type-toggle">
+        <button class="toggle-btn active" id="btnTypeExpense" onclick="setAddTxType('expense')">🔴 Khoản Chi</button>
+        <button class="toggle-btn" id="btnTypeIncome" onclick="setAddTxType('income')">🟢 Khoản Thu</button>
+      </div>
+
+      <div class="form-group">
+        <label>Tiêu Đề / Tên Giao Dịch:</label>
+        <input type="text" id="inpTxTitle" placeholder="Ví dụ: Tiền ăn trưa, Tiền thưởng dự án...">
+      </div>
+
+      <div class="form-group">
+        <label>Số Tiền (VNĐ):</label>
+        <input type="number" id="inpTxAmount" placeholder="Ví dụ: 45000" min="1000">
+      </div>
+
+      <div class="form-group">
+        <label>Danh Mục:</label>
+        <select id="selTxCategory"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Ví Thanh Toán:</label>
+        <select id="selTxWallet">
+          <option value="cash">Tiền mặt</option>
+          <option value="bank">Tài khoản VCB / MB</option>
+          <option value="momo">Ví MoMo</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Ngày Giao Dịch:</label>
+        <input type="date" id="inpTxDate">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeAddModal()">Hủy</button>
+        <button class="btn-primary" onclick="submitAddTx()">Lưu Giao Dịch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Nạp Tiền Vào Mục Tiêu Tiết Kiệm -->
+  <div class="modal-overlay" id="goalModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="goalModalTitle">🎯 Nạp Tiền Vào Mục Tiêu</h3>
+        <button class="btn-close-modal" onclick="closeGoalModal()">✕</button>
+      </div>
+      <p class="modal-desc" id="goalModalDesc">Tích lũy tiền tiết kiệm từ một trong các ví của bạn.</p>
+
+      <div class="form-group">
+        <label>Trích Tiền Từ Ví:</label>
+        <select id="selGoalWallet">
+          <option value="bank">Tài khoản VCB / MB</option>
+          <option value="cash">Tiền mặt</option>
+          <option value="momo">Ví MoMo</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Số Tiền Nạp (VNĐ):</label>
+        <input type="number" id="inpGoalAmount" placeholder="Ví dụ: 1000000" min="10000">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeGoalModal()">Hủy</button>
+        <button class="btn-primary" onclick="submitGoalDeposit()">Xác Nhận Nạp Quỹ</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="tesseract.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

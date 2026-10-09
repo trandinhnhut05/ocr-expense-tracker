@@ -1,5 +1,11 @@
 import 'category.dart';
 
+enum TransactionType {
+  expense,
+  income,
+  transfer,
+}
+
 class Expense {
   final String id;
   final String title;
@@ -12,6 +18,9 @@ class Expense {
   final double confidenceScore; // 0.0 to 1.0 (from OCR & regex heuristic)
   final String? notes;
   final DateTime createdAt;
+  final TransactionType type;
+  final String walletId;
+  final String? targetWalletId; // Used only when type == TransactionType.transfer
 
   Expense({
     required this.id,
@@ -25,9 +34,16 @@ class Expense {
     this.confidenceScore = 1.0,
     this.notes,
     DateTime? createdAt,
+    this.type = TransactionType.expense,
+    this.walletId = 'cash',
+    this.targetWalletId,
   }) : createdAt = createdAt ?? DateTime.now();
 
   ExpenseCategory get category => ExpenseCategory.getById(categoryId);
+
+  bool get isIncome => type == TransactionType.income;
+  bool get isExpense => type == TransactionType.expense;
+  bool get isTransfer => type == TransactionType.transfer;
 
   Expense copyWith({
     String? id,
@@ -41,6 +57,9 @@ class Expense {
     double? confidenceScore,
     String? notes,
     DateTime? createdAt,
+    TransactionType? type,
+    String? walletId,
+    String? targetWalletId,
   }) {
     return Expense(
       id: id ?? this.id,
@@ -54,6 +73,9 @@ class Expense {
       confidenceScore: confidenceScore ?? this.confidenceScore,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
+      type: type ?? this.type,
+      walletId: walletId ?? this.walletId,
+      targetWalletId: targetWalletId ?? this.targetWalletId,
     );
   }
 
@@ -70,10 +92,19 @@ class Expense {
       'confidence_score': confidenceScore,
       'notes': notes,
       'created_at': createdAt.toIso8601String(),
+      'type': type.name,
+      'wallet_id': walletId,
+      'target_wallet_id': targetWalletId,
     };
   }
 
   factory Expense.fromMap(Map<String, dynamic> map) {
+    final typeName = map['type'] as String? ?? 'expense';
+    final parsedType = TransactionType.values.firstWhere(
+      (t) => t.name == typeName,
+      orElse: () => TransactionType.expense,
+    );
+
     return Expense(
       id: map['id'] as String,
       title: map['title'] as String,
@@ -88,6 +119,9 @@ class Expense {
       createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'] as String)
           : DateTime.now(),
+      type: parsedType,
+      walletId: map['wallet_id'] as String? ?? 'cash',
+      targetWalletId: map['target_wallet_id'] as String?,
     );
   }
 }

@@ -51,7 +51,7 @@ class AppTheme {
         background: darkBg,
         error: danger,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: darkCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -101,7 +101,7 @@ class AppTheme {
         background: lightBg,
         error: danger,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: lightCard,
         elevation: 1,
         shape: RoundedRectangleBorder(

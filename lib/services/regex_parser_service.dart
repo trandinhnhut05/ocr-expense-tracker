@@ -34,6 +34,22 @@ class RegexParserService {
     'Be Group',
     'Petrolimex',
     'GS25',
+    'BIDV',
+    'MB Bank',
+    'NHTMCP Quân Đội',
+    'Vietcombank',
+    'Techcombank',
+    'VietinBank',
+    'Agribank',
+    'VPBank',
+    'TPBank',
+    'ACB',
+    'Sacombank',
+    'HDBank',
+    'MoMo',
+    'ZaloPay',
+    'VNPay',
+    'Viettel Money',
   ];
 
   static const List<String> headerBlacklistKeywords = [
@@ -149,6 +165,58 @@ class RegexParserService {
   // HEURISTIC 1: MERCHANT NAME EXTRACTION
   // =========================================================================
   static _MerchantExtractionResult _extractMerchant(List<String> lines) {
+    final fullText = lines.join('\n');
+
+    // Check for Bank Transfer: Bank + Recipient or Bank + Content
+    final toMatch = RegExp(
+      r'(?:Đến|Den|Tới|To|Người nhận|Thụ hưởng|Tên người nhận):\s*([^\n\r]+)',
+      caseSensitive: false,
+    ).firstMatch(fullText);
+    String? recipient;
+    if (toMatch != null) {
+      recipient = toMatch
+          .group(1)
+          ?.replaceAll(RegExp(r'[^\p{L}\p{N}\s]', unicode: true), '')
+          .trim();
+    }
+
+    String? matchedBank;
+    for (final bank in [
+      'BIDV',
+      'MB Bank',
+      'NHTMCP Quân Đội',
+      'Vietcombank',
+      'Techcombank',
+      'VietinBank',
+      'Agribank',
+      'VPBank',
+      'TPBank',
+      'ACB',
+      'Sacombank',
+      'HDBank',
+      'MoMo',
+      'ZaloPay'
+    ]) {
+      if (RegExp('\\b$bank\\b', caseSensitive: false).hasMatch(fullText)) {
+        matchedBank = bank;
+        break;
+      }
+    }
+
+    if (matchedBank != null && recipient != null && recipient.isNotEmpty) {
+      return _MerchantExtractionResult(
+        merchant: '$matchedBank ➔ $recipient',
+        confidence: 0.98,
+        method: 'Giao dịch chuyển khoản ngân hàng',
+      );
+    } else if (matchedBank != null) {
+      return _MerchantExtractionResult(
+        merchant: 'Ngân hàng $matchedBank',
+        confidence: 0.92,
+        method: 'Tổ chức tài chính / Ngân hàng',
+      );
+    }
+
     final searchLines = lines.take(6).toList();
 
     // Check against known merchants dictionary with case-insensitive matching
@@ -198,15 +266,15 @@ class RegexParserService {
   // HEURISTIC 2: MONETARY TOTAL EXTRACTION
   // =========================================================================
   static _AmountExtractionResult _extractTotalAmount(List<String> lines) {
-    // Regex for matching Total labels
+    // Regex for matching Total labels (Retail & Bank Transfers)
     final totalKeywordsRegex = RegExp(
-      r'(?:TỔNG\s*CỘNG|TONG\s*CONG|THÀNH\s*TIỀN|THANH\s*TIEN|TỔNG\s*TIỀN|TONG\s*TIEN|CẦN\s*THANH\s*TOÁN|CAN\s*THANH\s*TOAN|TIỀN\s*THANH\s*TOÁN|TIEN\s*THANH\s*TOAN|GRAND\s*TOTAL|NET\s*AMOUNT|TOTAL\s*DUE|AMOUNT\s*DUE|BALANCE\s*DUE|TOTAL|TỔNG)\b',
+      r'(?:TỔNG\s*CỘNG|TONG\s*CONG|THÀNH\s*TIỀN|THANH\s*TIEN|TỔNG\s*TIỀN|TONG\s*TIEN|CẦN\s*THANH\s*TOÁN|CAN\s*THANH\s*TOAN|TIỀN\s*THANH\s*TOÁN|TIEN\s*THANH\s*TOAN|GRAND\s*TOTAL|NET\s*AMOUNT|TOTAL\s*DUE|AMOUNT\s*DUE|BALANCE\s*DUE|TOTAL|TỔNG|SỐ\s*TIỀN\s*GIAO\s*DỊCH|SỐ\s*TIỀN|SO\s*TIEN|AMOUNT|GIAO\s*DỊCH\s*THÀNH\s*CÔNG|GIAO\s*DICH\s*THANH\s*CONG|CHUYỂN\s*TIỀN\s*THÀNH\s*CÔNG|CHUYEN\s*TIEN\s*THANH\s*CONG|CHUYỂN\s*KHOẢN\s*THÀNH\s*CÔNG|THANH\s*TOÁN\s*THÀNH\s*CÔNG)\b',
       caseSensitive: false,
     );
 
     // Negative keywords: Avoid capturing cash given or change
     final negativeKeywordsRegex = RegExp(
-      r'(?:TIỀN\s*KHÁCH\s*ĐƯA|TIEN\s*KHACH\s*DUA|TIỀN\s*THỪA|TIEN\s*THUA|TIỀN\s*THỐI|TIEN\s*THOI|CHANGE|CASH\s*TENDERED|GIẢM\s*GIÁ|DISCOUNT|TAX|VAT|TIỀN\s*TÍCH\s*LŨY)',
+      r'(?:TIỀN\s*KHÁCH\s*ĐƯA|TIEN\s*KHACH\s*DUA|TIỀN\s*THỪA|TIEN\s*THUA|TIỀN\s*THỐI|TIEN\s*THOI|CHANGE|CASH\s*TENDERED|GIẢM\s*GIÁ|DISCOUNT|TAX|VAT|TIỀN\s*TÍCH\s*LŨY|SỐ\s*THAM\s*CHIẾU|TÀI\s*KHOẢN|STK)',
       caseSensitive: false,
     );
 
@@ -216,8 +284,8 @@ class RegexParserService {
     String detectedCurrency = 'VND';
     double confidence = 0.0;
 
-    // Search from bottom up, because grand totals typically sit near bottom
-    for (int i = lines.length - 1; i >= 0; i--) {
+    // Search from total keywords across lines
+    for (int i = 0; i < lines.length; i++) {
       final line = lines[i];
 
       // Check negative keywords first
@@ -230,43 +298,59 @@ class RegexParserService {
         if (amountCandidate != null && amountCandidate.value > 0) {
           detectedTotal = amountCandidate.value;
           detectedCurrency = amountCandidate.currency;
-          confidence = line.toUpperCase().contains('TỔNG CỘNG') ||
-                  line.toUpperCase().contains('GRAND TOTAL')
-              ? 0.98
-              : 0.88;
+          confidence = 0.98;
           break;
         }
 
-        // If amount was not in the same line, check immediate next line
+        // If amount was not in the same line, check immediate next line (common in banking apps)
         if (i + 1 < lines.length) {
           final nextLineCandidate = _extractNumberFromLine(lines[i + 1]);
           if (nextLineCandidate != null && nextLineCandidate.value > 0) {
             detectedTotal = nextLineCandidate.value;
             detectedCurrency = nextLineCandidate.currency;
-            confidence = 0.85;
+            confidence = 0.95;
             break;
           }
         }
       }
     }
 
-    // Fallback: If no explicit total label matched, search for the maximum plausible numeric amount
+    // Fallback 1: Lines ending with currency symbol (VND, VNĐ, đ)
+    if (detectedTotal == null) {
+      for (final line in lines) {
+        if (negativeKeywordsRegex.hasMatch(line)) continue;
+        if (RegExp(r'(?:VND|VNĐ|đ|d)\b', caseSensitive: false).hasMatch(line)) {
+          final candidate = _extractNumberFromLine(line);
+          if (candidate != null &&
+              candidate.value >= 1000 &&
+              candidate.value < 1000000000) {
+            detectedTotal = candidate.value;
+            detectedCurrency = candidate.currency;
+            confidence = 0.92;
+            break;
+          }
+        }
+      }
+    }
+
+    // Fallback 2: If no explicit total label matched, search for the maximum plausible numeric amount
     if (detectedTotal == null) {
       double maxVal = 0.0;
       for (final line in lines) {
         if (negativeKeywordsRegex.hasMatch(line)) continue;
+        if (RegExp(r'\b(?:0200\d{8,}|\d{12,})\b').hasMatch(line)) continue;
         final candidate = _extractNumberFromLine(line);
         if (candidate != null &&
             candidate.value > maxVal &&
-            candidate.value < 100000000) {
-          // Plausible single receipt <= 100M VND
+            candidate.value < 500000000) {
+          // Plausible single transaction <= 500M VND
           maxVal = candidate.value;
           detectedCurrency = candidate.currency;
         }
       }
       if (maxVal > 0) {
         detectedTotal = maxVal;
-        confidence = 0.65;
+        confidence = 0.70;
       }
     }
 
