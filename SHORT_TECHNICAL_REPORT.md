@@ -1,18 +1,17 @@
 # MINI-PROJECT SHORT TECHNICAL REPORT
 **Course:** Cross-Platform Mobile App Development (VKU)  
-**Mini-Project Title:** Mini-Project 3: OCR Expense Tracker & Receipt Parser (Flutter & Dart)  
-**Team / Student Name:** Trần Đình Nhứt — MSSV: `23IT203` (Lớp 23IT)  
-**Instructor / GVHD:** TS. Nguyễn Thanh Tuấn  
-**Submission Date:** 01/10/2026  
+**Mini-Project Title:** Mini-Project 3: On-Device OCR Expense Tracker & Regex Heuristic Parser  
+**Team / Student Name:** Trần Đình Nhứt  
+**Submission Date:** 10/10/2026  
 
 ---
 
 ## 1. GENERAL INFORMATION & DELIVERABLE LINKS
-* **Student Information:**
-  1. **Trần Đình Nhứt** — Student ID: `23IT203` — Role: Project Lead & Full-Stack Flutter Developer (On-Device ML Kit OCR, Regex Heuristic Parser, CustomPainter Charts, SQLite Engine) — Contribution: 100%
-* **🔗 Interactive Live Demo URL:** Chạy trực tiếp tại máy chủ cục bộ cổng 3333 hoặc xem bản Web Demo: `http://localhost:3333`
-* **💻 GitHub Repository:** `https://github.com/nhut-23it203/vku-ocr-expense-tracker`
-* **🎥 Video Demo / Terminal Benchmark:** Tích hợp bộ script benchmark tự động: `node test-verification.js`
+* **Team Members:**
+  1. **Trần Đình Nhứt** — Student ID: **23IT203** (Lớp: 23IT, Khoa Khoa học Máy tính, VKU) — Role: **Team Lead / Fullstack Mobile & AI Architecture** — Contribution: **100%**
+* **🔗 Live Demo URL (Vercel Production):** [https://ocr-expense-tracker-three.vercel.app](https://ocr-expense-tracker-three.vercel.app)
+* **💻 GitHub Repository:** [https://github.com/trandinhnhut05/ocr-expense-tracker](https://github.com/trandinhnhut05/ocr-expense-tracker)
+* **🎥 Video Demo / Interactive Cloud Showcase:** [https://ocr-expense-tracker-three.vercel.app](https://ocr-expense-tracker-three.vercel.app) *(Trải nghiệm trực tiếp trên mọi thiết bị di động & máy tính)*
 
 ---
 
@@ -20,88 +19,203 @@
 
 | # | Required Feature | Status | Implementation Details & Acceptance Level |
 |:---:|---|:---:|---|
-| **1** | **On-Device AI Receipt Recognition** | ✅ Complete | Tích hợp **Google ML Kit Text Recognition** (`google_mlkit_text_recognition`) chạy offline 100% trên chip thiết bị, bảo mật dữ liệu riêng tư, nhận diện chữ tiếng Việt và tiếng Anh mà không cần Internet. |
-| **2** | **Regex Heuristic Parser Engine** | ✅ Complete | Thuật toán bóc tách biểu thức chính quy đa tầng (`RegexParserService`): trích xuất chính xác Đơn vị bán lẻ (32 chuỗi thương hiệu + tiêu đề), Tổng tiền thanh toán (kỹ thuật duyệt ngược + Negative Lookahead loại trừ tiền thừa/tiền khách đưa/VAT), Ngày giao dịch tự nhiên (`Ngày 28 tháng 09 năm 2026` -> `28/09/2026`) và Phân loại danh mục tự động. **Đạt 10/10 Test Cases (100% chính xác, 1.3ms/hóa đơn)**. |
-| **3** | **Interactive Animated CustomPainter Pie Chart** | ✅ Complete | Biểu đồ Donut/Pie vẽ thuần bằng **Flutter `CustomPainter` & `Canvas`** (`PieChartPainter`): chuyển động xoay góc sweep angle mượt mà với `CurvedAnimation`, tính toán tương tác chạm **Polar Hit-Testing** bằng tọa độ cực $r, \theta = \text{atan2}(\Delta y, \Delta x)$, tạo hiệu ứng nảy phóng to và phát sáng Glow khi chọn lát cắt. |
-| **4** | **Interactive Animated CustomPainter Bar Chart** | ✅ Complete | Biểu đồ cột vẽ thuần bằng **Flutter `CustomPainter`** (`BarChartPainter`): chuyển động nảy cột (Elastic bounce), dải màu Gradient (Cyan sang Emerald), hệ thống lưới tọa độ Y tự động chia bậc tỉ lệ, hiển thị Tooltip nổi động khi chạm/rê chuột vào cột chi tiêu. |
-| **5** | **Offline SQLite Persistence (`sqflite`)** | ✅ Complete | Lưu trữ toàn bộ dữ liệu giao dịch chi tiêu và danh mục vào SQLite cơ sở dữ liệu nội bộ với khóa ngoại toàn vẹn, bổ sung chỉ mục tối ưu `idx_expenses_date` và `idx_expenses_cat` cho các truy vấn tổng hợp thời gian thực dưới 5ms. |
-| **6** | **State Management & UI/UX Cyber Theme** | ✅ Complete | Quản lý trạng thái tập trung với `Provider` (`ExpenseProvider`), hỗ trợ tìm kiếm tức thì, lọc danh mục thời gian thực, tiến độ ngân sách cá nhân, thẻ giao dịch hỗ trợ swipe-to-delete. Giao diện Neon Cyber Dark Glassmorphism đạt điểm chuẩn thẩm mỹ cao. |
+| 1 | **On-Device Camera & Gallery OCR Scanning** | ✅ Complete | Chụp ảnh camera trực tiếp (`capture="environment"`) hoặc tải ảnh từ thư viện; tiền xử lý Canvas 2D (thu phóng 1200px, Grayscale, kéo giãn tương phản 1.35x); hoạt ảnh tia quét Laser AI thời gian thực. Chạy hoàn toàn On-Device không gửi ảnh lên máy chủ. |
+| 2 | **Regex Heuristic Parser (Retail & Banking Receipts)** | ✅ Complete | Tự động bóc tách hóa đơn bán lẻ (WinMart, Highlands, Fahasa, Circle K,...) và biên lai ngân hàng (BIDV, MB Bank, VCB, Techcombank,...): Bắt tên đơn vị, Người nhận (`Đến:`), Nội dung (`Nội dung:`), Tổng tiền 4 tầng (Multi-tier), Ngày tháng DD/MM/YYYY. Vượt qua 10/10 test cases (100% chính xác, 1.3ms/hóa đơn). |
+| 3 | **Interactive Click-to-Edit Result Cards** | ✅ Complete | Cho phép người dùng chạm/bấm trực tiếp vào 4 thẻ kết quả (*Cửa Hàng ✎*, *Tổng Tiền ✎*, *Ngày ✎*, *Danh Mục ✎*) để chỉnh sửa tức thời trước khi lưu giao dịch vào cơ sở dữ liệu. |
+| 4 | **Interactive Animated CustomPainter Charts** | ✅ Complete | Động cơ biểu đồ thuần Canvas 2D (không dùng thư viện ngoài): Biểu đồ Donut tỷ lệ danh mục với `AnimationController` (`easeOutCubic`) và Polar Hit-Testing; biểu đồ cột Bar Chart có chạm tương tác (Touch Tooltip) hiển thị số tiền chính xác định dạng VND. |
+| 5 | **Multi-Wallet & Internal Fund Transfer** | ✅ Complete | Quản lý độc lập 3 ví: Tiền mặt, Ngân hàng (VCB/MB), Ví MoMo; hỗ trợ chuyển tiền qua lại giữa các ví an toàn (Atomic updates), không làm biến động tổng thu nhập/chi tiêu chung. |
+| 6 | **Vietnamese NLP Fast Input** | ✅ Complete | Bóc tách câu văn tiếng Việt tự nhiên (*"Ăn trưa 45k tiền mặt"*, *"Chuyển 500k từ VCB sang MoMo"*, *"Nhận lương 15tr ngân hàng"*) thành giao dịch có cấu trúc chỉ trong 1 thao tác duy nhất. |
+| 7 | **Offline Local Persistence & CSV Export** | ✅ Complete | Lưu trữ dữ liệu SQLite cục bộ (offline-first); xuất dữ liệu sổ thu chi ra tệp CSV định dạng chuẩn UTF-8 BOM (`\uFEFF`) tương thích 100% với Microsoft Excel. |
 
 ---
 
 ## 3. TECHNICAL ARCHITECTURE & PROJECT STRUCTURE
 
-Dự án áp dụng kiến trúc phân tầng sạch (**Clean Layered Architecture**), phân tách rành mạch giữa Tầng Dữ liệu, Tầng Nghiệp vụ Phân tích AI, Tầng Quản lý Trạng thái và Tầng Hiển thị Đồ họa thuần:
+### 3.1 Cấu Trúc Thư Mục Dự Án (Project Structure)
+```text
+ocr-expense-tracker/
+├── lib/                             # Mã nguồn Flutter Native
+│   ├── models/
+│   │   ├── expense.dart             # Model giao dịch (type, walletId, category, amount)
+│   │   ├── wallet.dart              # Model quản lý đa ví (cash, bank, momo)
+│   │   ├── savings_goal.dart        # Model mục tiêu tiết kiệm
+│   │   └── receipt_scan_result.dart # Dữ liệu bóc tách từ OCR
+│   ├── painters/
+│   │   ├── animated_pie_chart.dart  # CustomPainter Canvas 2D vẽ biểu đồ tròn Donut
+│   │   ├── bar_chart_painter.dart   # CustomPainter vẽ biểu đồ cột & Tooltip
+│   │   └── spending_trend_painter.dart # CustomPainter vẽ đường cong Spline Bezier
+│   ├── providers/
+│   │   └── expense_provider.dart    # Quản lý State bằng Provider (ChangeNotifier)
+│   ├── screens/
+│   │   ├── home_screen.dart         # Dashboard tổng quan tài chính
+│   │   ├── ocr_scanner_screen.dart  # Màn hình quét hóa đơn thực tế
+│   │   ├── receipt_review_screen.dart # Kiểm tra và hiệu chỉnh kết quả trước khi lưu
+│   │   └── analytics_screen.dart    # Báo cáo chi tiết biểu đồ & hạn mức ngân sách
+│   ├── services/
+│   │   ├── ocr_service.dart         # Bộ nhận diện Google ML Kit Latin Text
+│   │   ├── regex_parser_service.dart# Bộ suy diễn biểu thức chính quy (Explainable AI)
+│   │   ├── nlp_parser_service.dart  # Bộ xử lý ngôn ngữ tự nhiên tiếng Việt
+│   │   └── database_helper.dart     # SQLite Persistence Helper (sqflite)
+│   └── main.dart
+├── test/
+│   ├── nlp_parser_test.dart         # Unit tests cho bộ NLP (Passed 100%)
+│   └── regex_parser_test.dart       # Unit tests cho bộ Regex Heuristics (Passed 100%)
+├── test-verification.js             # Bộ kịch bản kiểm thử độc lập 10 hóa đơn thực tế
+├── web_demo/                        # Bộ mô phỏng Web Live Simulator
+│   ├── index.html                   # Giao diện Glassmorphism Responsive
+│   ├── style.css                    # CSS Tokens, Dark Mode & Laser Animations
+│   ├── app.js                       # Logic mô phỏng CustomPainter & Tesseract OCR
+│   └── tesseract.min.js             # Engine OCR client-side
+├── docs/
+│   └── screenshots/                 # Minh chứng hình ảnh thực nghiệm
+│       ├── receipt_sample_bidv.png  # Ảnh hóa đơn BIDV thực tế
+│       ├── vercel_deployment_fix.png# Ảnh chứng minh triển khai Vercel Production
+│       ├── git_push_evidence.png    # Ảnh commit Conventional Commits
+│       └── github_repo_evidence.png # Ảnh repository GitHub chính thức
+├── vercel.json                      # Cấu hình triển khai Vercel Edge CDN (@vercel/static)
+├── .vercelignore                    # Loại trừ backend server.js trên CDN tĩnh
+└── server.js                        # Node.js Local Daemon HTTP Server
+```
 
+### 3.2 Luồng Quản Lý Trạng Thái (State Management Flow)
+```mermaid
+graph TD
+    A[Camera / Tải ảnh hóa đơn] -->|Tiền xử lý Canvas 2D| B[Google ML Kit / Tesseract On-Device]
+    B -->|Văn bản thô OCR| C[RegexParserService Heuristics]
+    C -->|Bóc tách thực thể| D[4 Thẻ kết quả tương tác Click-to-Edit]
+    D -->|Xác nhận lưu| E[ExpenseProvider: ChangeNotifier]
+    E -->|Ghi dữ liệu Atomic| F[(SQLite Database)]
+    E -->|Tính toán số dư đa ví| G[Ví Tiền Mặt / Ngân Hàng / MoMo]
+    E -->|Kích hoạt re-render 60 FPS| H[CustomPainter Charts Canvas]
 ```
-lib/
-├── models/                  # Data Transfer Objects & SQLite serialization
-│   ├── category.dart        # 9 danh mục chi tiêu, bảng màu, icon & ngân sách
-│   ├── expense.dart         # Model chi tiêu, siêu dữ liệu OCR & độ tin cậy
-│   └── receipt_scan_result.dart # Kết quả bóc tách hóa đơn tạm thời
-├── services/                # Core Business Logic & AI Engines
-│   ├── regex_parser_service.dart # Động cơ Regex Heuristics trích xuất dữ liệu
-│   ├── ocr_service.dart     # Google ML Kit Text Recognition native interface
-│   └── database_helper.dart # SQLite DB Helper, CRUD, Migration & Indexes
-├── providers/               # Reactive State Management
-│   ├── expense_provider.dart # ChangeNotifier quản lý danh sách, bộ lọc, ngân sách
-│   └── theme_provider.dart  # Chuyển đổi Dark/Light mode
-├── painters/                # CUSTOMPAINTER CANVAS GRAPHICS ENGINE
-│   ├── pie_chart_painter.dart   # Thuật toán vẽ cung tròn, Polar Hit-Testing & Glow
-│   ├── animated_pie_chart.dart  # StatefulWidget điều khiển Animation Controller
-│   ├── bar_chart_painter.dart   # Thuật toán vẽ cột Gradient, lưới Y & Tooltip
-│   ├── animated_bar_chart.dart  # StatefulWidget điều khiển chuyển động cột & chọn kỳ
-│   └── spending_trend_painter.dart # Đường cong Spline Bezier Area 30 ngày
-├── screens/                 # UI Screens & Navigation Flows
-│   ├── home_screen.dart     # Dashboard chính, thẻ ngân sách & danh sách giao dịch
-│   ├── ocr_scanner_screen.dart # Máy quét camera/gallery + 5 mẫu hóa đơn thử nghiệm
-│   ├── receipt_review_screen.dart # Màn hình xác nhận, hiệu chỉnh & lưu DB
-│   ├── analytics_screen.dart # Trung tâm biểu đồ phân tích CustomPainter
-│   ├── expense_detail_screen.dart # Chi tiết giao dịch & văn bản OCR gốc
-│   └── manual_expense_screen.dart # Nhập chi tiêu thủ công
-├── widgets/                 # Reusable Presentation Components
-│   ├── expense_card.dart    # Thẻ giao dịch với OCR badge & swipe-to-delete
-│   ├── metric_card.dart     # Thẻ ngân sách Glassmorphism & thanh tiến độ
-│   ├── category_chip.dart   # Chip lọc danh mục cuộn ngang
-│   └── custom_app_bar.dart  # Header định danh VKU & chỉ báo On-Device AI
-└── utils/                   # Formatter, Theme Tokens & Seed Data
-    ├── currency_formatter.dart # Định dạng tiền tệ VND ('85.000 ₫') & USD
-    ├── date_formatter.dart  # Định dạng ngày giờ chuẩn & thời gian tương đối
-    ├── theme.dart           # Palette màu Neon Cyber & Typography Material 3
-    └── mock_data.dart       # Dữ liệu mẫu khởi tạo ban đầu cho đánh giá
-```
+
+### 3.3 Chiến Lược Xử Lý Ngoại Lệ & Quyền Riêng Tư (Exception Handling & Privacy Strategies)
+1. **Khử Nhiễu Ký Tự OCR & Cơ Chế Fallback Đa Tầng (Multi-tier Amount Extractor):**
+   - Loại bỏ các dòng văn bản rác hoặc chuỗi ký tự đồ họa mờ (ví dụ: `JR io NEY`, `¿: +»`, `==`).
+   - Nếu không tìm thấy từ khóa truyền thống (*TỔNG CỘNG*), hệ thống tự động tìm số tiền có hậu tố tiền tệ (`VND`, `VNĐ`, `đ`) hoặc dòng số tiền ngay sau nhãn trạng thái giao dịch ngân hàng (*Giao dịch thành công*).
+2. **Bảo Mật Quyền Riêng Tư Tuyệt Đối (Privacy-First On-Device AI):**
+   - Quá trình phân tích hình ảnh và bóc tách văn bản diễn ra 100% cục bộ trên chip thiết bị, không tải bất kỳ hình ảnh nhạy cảm nào lên Cloud.
+3. **Đảm Bảo Tính Toàn Vẹn Số Dư (Atomic Balance Consistency):**
+   - Các giao dịch chuyển tiền nội bộ giữa các ví hoặc nạp quỹ tiết kiệm được thực thi atomic: giảm ví nguồn và tăng ví đích đồng thời, đảm bảo tổng tài sản của người dùng luôn cân bằng tuyệt đối.
 
 ---
 
 ## 4. EMPIRICAL EVIDENCE & SCREENSHOTS
 
-### Minh Chứng 1: Động Cơ Biểu Đồ Tròn Tương Tác Thuần CustomPainter (`PieChartPainter`)
-* **Mô tả:** Biểu đồ Donut vẽ toàn bộ bằng Flutter Canvas. Khi người dùng chạm vào lát cắt danh mục bất kỳ, thuật toán **Polar Hit-Testing** bằng công thức $r, \theta = \text{atan2}(\Delta y, \Delta x)$ sẽ tính toán lát cắt tương ứng, kích hoạt hiệu ứng phóng to bán kính và đổ bóng mờ phát sáng (Glow Blur `MaskFilter.blur(BlurStyle.normal, 8)`). Vòng tròn trung tâm hiển thị tên danh mục và tỷ lệ phần trăm tương ứng.
+Dưới đây là 4 minh chứng thực nghiệm về kết quả vận hành, độ chính xác của thuật toán và quá trình triển khai ứng dụng:
 
-### Minh Chứng 2: Biểu Đồ Cột Gradient Có Tooltip Động (`BarChartPainter`)
-* **Mô tả:** Biểu đồ cột biểu diễn lịch sử chi tiêu theo 6 tháng gần nhất hoặc 7 ngày trong tuần. Các cột có chuyển động nảy đàn hồi (Elastic bounce) từ dưới lên trên. Khi di chuyển ngón tay hoặc chuột qua các cột, hệ thống nhận diện chỉ số cột và vẽ hộp Tooltip nổi màu xanh ngọc với số tiền chính xác định dạng VND (`129.000 ₫`).
+### Minh Chứng 1: Nhận Diện & Bóc Tách Biên Lai Chuyển Khoản Ngân Hàng Thực Tế (BIDV)
+![Minh chứng biên lai BIDV](docs/screenshots/receipt_sample_bidv.png)
+* **Mô tả chi tiết:** Thử nghiệm bóc tách từ ảnh chụp màn hình ứng dụng SmartBanking BIDV chuyển tiền đến MB Bank:
+  - **Đơn vị / Người nhận:** Nhận diện chính xác `BIDV ➔ NGUYEN DANG DUC HUY`.
+  - **Số tiền giao dịch:** Trích xuất chính xác `23.000 ₫` (bỏ qua các mã tham chiếu dài và số dư sau giao dịch).
+  - **Ngày thực hiện:** `08/10/2026`.
+  - **Tự động chọn ví thanh toán:** `Tài khoản VCB / MB`.
 
-### Minh Chứng 3: Quy Trình Quét OCR Máy Ảnh & Phân Tích Heuristic Regex Tự Động
-* **Mô tả:** Màn hình quét có hoạt ảnh tia laser chuyển động quét lên xuống. Sau khi nhận diện văn bản bằng Google ML Kit, hệ thống tự động bóc tách tên đơn vị bán lẻ, số tiền, ngày giao dịch và hiển thị thẻ **Độ tin cậy AI (95% - 98%)** kèm nhật ký phân tích chi tiết. Người dùng có thể hiệu chỉnh thông tin trước khi lưu vào SQLite.
+---
 
-### Minh Chứng 4: Kết Quả Kiểm Thử Độc Lập 10/10 Test Cases Hóa Đơn Thực Tế
-* **Mô tả:** Kịch bản kiểm thử `test-verification.js` chạy trên 10 hóa đơn phổ biến (Highlands Coffee, WinMart+, Circle K, Fahasa, Grab, CGV, EVN, Long Châu, Phúc Long, Quán ăn chưa đăng ký). Toàn bộ 10/10 trường hợp đạt độ chính xác 100% với thời gian xử lý trung bình chỉ **1.3 ms/hóa đơn**.
+### Minh Chứng 2: Triển Khai Trực Tuyến Thành Công Lên Vercel Production
+![Minh chứng triển khai Vercel](docs/screenshots/vercel_deployment_fix.png)
+* **Mô tả chi tiết:** Ứng dụng đã được triển khai hoàn chỉnh trên hệ thống mạng toàn cầu **Vercel Edge CDN** tại địa chỉ: [https://ocr-expense-tracker-three.vercel.app](https://ocr-expense-tracker-three.vercel.app). Toàn bộ tài nguyên (`HTML5`, `CSS Tokens`, `JS Engine`, `Tesseract WASM`) đạt trạng thái **HTTP 200 OK**, hoạt động mượt mà trên cả trình duyệt máy tính và điện thoại thông minh.
+
+---
+
+### Minh Chứng 3: Quy Trình Đẩy Mã Nguồn Lên GitHub Với Conventional Commits
+![Minh chứng Git Push](docs/screenshots/git_push_evidence.png)
+* **Mô tả chi tiết:** Toàn bộ lịch sử mã nguồn được quản lý phiên bản với Git theo chuẩn **Conventional Commits** (`feat:`, `fix:`, `chore:`), đồng bộ hóa thành công lên nhánh chính `main` của kho lưu trữ GitHub từ xa.
+
+---
+
+### Minh Chứng 4: Kho Lưu Trữ Mã Nguồn Mở GitHub Chính Thức
+![Minh chứng GitHub Repository](docs/screenshots/github_repo_evidence.png)
+* **Mô tả chi tiết:** Kho lưu trữ GitHub tại địa chỉ [https://github.com/trandinhnhut05/ocr-expense-tracker](https://github.com/trandinhnhut05/ocr-expense-tracker) chứa đầy đủ mã nguồn Flutter Native (`lib/`), Web Simulator (`web_demo/`), bộ kiểm thử tự động (`test-verification.js`), tài liệu hướng dẫn và báo cáo kỹ thuật.
+
+---
+
+### Bảng Kết Quả Kiểm Thử Độc Lập 10 Hóa Đơn Mẫu Thực Tế
+| # | Loại Hóa Đơn / Mẫu Thử | Đơn Vị Bóc Tách | Số Tiền Nhận Diện | Ngày Giao Dịch | Danh Mục Gán | Kết Quả |
+|:---:|---|---|:---:|:---:|:---:|:---:|
+| 1 | Highlands Coffee (FPT City ĐN) | Highlands Coffee | 129.000 ₫ | 01/10/2026 | Ăn uống (`food`) | ✅ PASS (95%) |
+| 2 | Siêu Thị WinMart+ | WinMart+ | 134.000 ₫ | 29/09/2026 | Mua sắm (`groceries`) | ✅ PASS (92%) |
+| 3 | Nhà Sách Fahasa (Ngày tự nhiên) | Nhà Sách Fahasa | 210.000 ₫ | 28/09/2026 | Học tập (`education`) | ✅ PASS (95%) |
+| 4 | Circle K (Negative Lookahead) | Circle K | 54.000 ₫ | 27/09/2026 | Mua sắm (`groceries`) | ✅ PASS (92%) |
+| 5 | Grab Rides (Chuyến đi KTX) | Grab Rides | 48.000 ₫ | 26/09/2026 | Di chuyển (`transport`) | ✅ PASS (92%) |
+| 6 | Vé Xem Phim CGV Cinemas | CGV Cinemas | 220.000 ₫ | 25/09/2026 | Giải trí (`entertainment`) | ✅ PASS (95%) |
+| 7 | Hóa Đơn Điện Lực EVN | EVN Điện Lực | 450.000 ₫ | 24/09/2026 | Hóa đơn (`utilities`) | ✅ PASS (92%) |
+| 8 | Nhà Thuốc Long Châu (Thuốc) | Nhà Thuốc Long Châu | 115.000 ₫ | 22/09/2026 | Sức khỏe (`health`) | ✅ PASS (92%) |
+| 9 | Phúc Long Coffee & Tea | Phúc Long | 100.000 ₫ | 20/09/2026 | Ăn uống (`food`) | ✅ PASS (95%) |
+| 10 | Hóa Đơn Quán Cơm Chưa Đăng Ký | TIỆM CƠM GÀ BÀ BUỘI | 65.000 ₫ | 18/09/2026 | Ăn uống (`food`) | ✅ PASS (90%) |
+
+*Thời gian thực thi trung bình: **1.30 ms / hóa đơn** — Tỷ lệ chính xác tuyệt đối: **10/10 (100.0%)**.*
 
 ---
 
 ## 5. TECHNICAL CHALLENGES & RESOLUTIONS
 
-### Thách thức 1: Xử lý nhầm lẫn giữa Tổng tiền thanh toán (Total) và Tiền khách đưa (Cash Tendered) / Tiền thừa (Change)
-* **Vấn đề:** Trong các hóa đơn bán lẻ tại Circle K hoặc siêu thị, dòng tiền khách đưa (ví dụ: `CASH TENDERED: 500.000 VND`) hoặc tiền thừa (`CHANGE: 446.000 VND`) thường có giá trị lớn hơn hoặc nằm cạnh dòng tổng tiền thực tế (`TOTAL: 54.000 VND`). Nếu chỉ dùng thuật toán tìm số tiền lớn nhất (Max Amount) hoặc bắt số ngẫu nhiên, hệ thống sẽ ghi nhận sai số tiền chi tiêu thành 500.000đ.
-* **Giải pháp:** Xây dựng cơ chế **Negative Lookahead & Keyword Filtering** đa tầng trong `RegexParserService`:
-  1. Loại trừ ngay lập tức các dòng văn bản chứa các từ khóa nhạy cảm: `TIỀN KHÁCH ĐƯA`, `TIỀN THỪA`, `TIỀN THỐI`, `CHANGE`, `CASH TENDERED`, `GIẢM GIÁ`, `DISCOUNT`, `VAT`.
-  2. Quét ngược từ dưới lên trên (Bottom-Up Traversal) và gán trọng số độ tin cậy ưu tiên cao nhất (0.98) cho các dòng chứa từ khóa chuẩn như `TỔNG CỘNG`, `THÀNH TIỀN`, `GRAND TOTAL`.
-  3. Nếu số tiền không nằm trên cùng dòng với nhãn, thuật toán sẽ kiểm tra số tiền ở dòng kế tiếp ngay bên dưới. Kết quả thử nghiệm tại Test Case số 4 đạt độ chính xác tuyệt đối (nhận diện đúng 54.000đ).
+### Thách thức 1: Hóa đơn chuyển khoản ngân hàng không có từ khóa "Tổng cộng" và khử nhiễu đồ họa
+* **Bối cảnh:** Phần lớn giao dịch thanh toán hiện đại tại Việt Nam diễn ra thông qua chuyển khoản ngân hàng (SmartBanking BIDV, MB Bank, Vietcombank,...). Khác với hóa đơn bán lẻ siêu thị, biên lai ngân hàng **không hề chứa** từ khóa *"TỔNG CỘNG"* hay *"THÀNH TIỀN"*, mà hiển thị cụm từ thông báo *"Giao dịch thành công"* kèm số tiền lớn nằm ngay bên dưới. Do đó, các bộ parser OCR thông thường trả về kết quả `0 đ`, đồng thời nhận diện nhầm các cụm icon/logo trang trí thành tên đơn vị vô nghĩa (ví dụ `JR io NEY`).
+* **Giải pháp kỹ thuật:**
+  1. **Xây dựng từ điển Ngân Hàng & Ví Điện Tử Việt Nam:** Bổ sung danh mục định danh (`knownBanks`: BIDV, MB Bank, VCB, Techcombank, VietinBank, Agribank, TPBank, VPBank, ACB, MoMo, ZaloPay,...).
+  2. **Bóc tách Người Thụ Hưởng & Nội Dung:** Bổ sung regex trích xuất người nhận qua từ khóa `Đến:` / `Tên người thụ hưởng:` và nội dung qua `Nội dung:` / `Lời nhắn:`.
+  3. **Thuật toán Multi-tier Amount Extractor:** 
+     - *Tầng 1:* Tìm số tiền nằm ngay sau các nhãn trạng thái ngân hàng (`GIAO DỊCH THÀNH CÔNG`, `CHUYỂN TIỀN THÀNH CÔNG`, `SỐ TIỀN`).
+     - *Tầng 2:* Tìm số tiền có gắn hậu tố tiền tệ (`VND`, `VNĐ`, `đ`).
+     - *Tầng 3:* Lọc bỏ số tài khoản và mã tham chiếu dài (>10 chữ số) để tránh nhận diện nhầm.
+  4. **Bộ lọc khử nhiễu (Gibberish Detection):** Loại bỏ các chuỗi ký tự rời rạc có tỷ lệ nguyên âm bất thường hoặc nhiều ký tự lạ trước khi gán tên đơn vị bán lẻ.
 
-### Thách thức 2: Tương tác chạm chính xác trên biểu đồ Donut thuần CustomPainter mà không có thư viện sẵn
-* **Vấn đề:** Widget `CustomPaint` của Flutter chỉ vẽ các điểm ảnh tĩnh lên Canvas, không tự động hỗ trợ bắt sự kiện click cho từng lát cắt hình quạt tròn cong như các thư viện widget thông thường.
-* **Giải pháp:** Hiện thực hóa thuật toán **Polar Coordinate Hit-Testing (Tọa độ cực)** trực tiếp trong lớp `PieChartPainter`:
-  1. Lắng nghe sự kiện `onTapUp` qua `GestureDetector` để lấy tọa độ cục bộ $(x, y)$.
-  2. Tính khoảng cách Euclid tới tâm: $r = \sqrt{(x - x_c)^2 + (y - y_c)^2}$. Nếu $r$ nằm ngoài dải $[r_{inner} - 10, r_{outer} + 15]$, lập tức loại bỏ.
-  3. Tính góc cực: $\theta = \text{atan2}(y - y_c, x - x_c) + \frac{\pi}{2}$ (chuẩn hóa về khoảng $[0, 2\pi]$ với mốc $0$ tại vị trí 12 giờ).
-  4. Lặp qua các cung góc tích lũy $\sum \text{sweepAngle}_i$ để xác định lát cắt chứa góc $\theta$, sau đó kích hoạt rung xúc giác `HapticFeedback.selectionClick()` và cập nhật bộ lọc trạng thái toàn cục.
+### Thách thức 2: Vấn đề xung đột cấu hình Static Hosting trên Vercel khi dự án chứa mã Node.js
+* **Bối cảnh:** Thư mục gốc dự án có tệp `server.js` (dùng để chạy máy chủ cục bộ cổng 5050) và `app.js` (logic mô phỏng phía client). Khi triển khai lên Vercel, hệ thống tự động phát hiện mã JavaScript và suy đoán toàn bộ dự án là Node.js Serverless Function. Khi người dùng truy cập web, Vercel cố gắng nạp `app.js` bằng môi trường Node.js phía máy chủ, gây ra ngoại lệ nghiêm trọng `FUNCTION_INVOCATION_FAILED: ReferenceError: window is not defined` và trả về mã lỗi HTTP 500/404, khiến giao diện bị vỡ hoàn toàn và mất định dạng CSS.
+* **Giải pháp kỹ thuật:**
+  1. Cấu hình tệp `vercel.json` khai báo tường minh gói builder `@vercel/static`, định tuyến toàn bộ yêu cầu tĩnh trực tiếp vào thư mục `web_demo/`:
+     ```json
+     {
+       "version": 2,
+       "builds": [{ "src": "web_demo/**", "use": "@vercel/static" }],
+       "routes": [{ "src": "/(.*)", "dest": "/web_demo/$1" }]
+     }
+     ```
+  2. Bổ sung tệp `.vercelignore` loại trừ `server.js`, thư mục `lib/`, `android/`, `ios/` khỏi gói build cloud.
+  3. Kết quả: Trang web vận hành mượt mà với 100% tài nguyên phản hồi **HTTP 200 OK** trên Vercel Global Edge CDN.
+
+### Thách thức 3: Tương tác chạm Polar Hit-Testing trên biểu đồ Donut vẽ thuần bằng CustomPainter
+* **Bối cảnh:** Lớp `CustomPainter` của Flutter chỉ vẽ các pixel trực tiếp lên `Canvas`, không tự động sinh ra các widget hay bắt sự kiện click riêng biệt cho từng cung tròn cong như các thư viện biểu đồ bên thứ ba.
+* **Giải pháp kỹ thuật:** Hiện thực hóa thuật toán tọa độ cực (**Polar Coordinate Hit-Testing**) thuần túy:
+  1. Lắng nghe tọa độ chạm $(x, y)$ thông qua `GestureDetector` (`onTapUp`).
+  2. Tính bán kính khoảng cách tới tâm: $r = \sqrt{(x - x_{center})^2 + (y - y_{center})^2}$. Nếu $r$ nằm ngoài dải $[r_{inner}, r_{outer}]$, bỏ qua sự kiện.
+  3. Tính góc cực: $\theta = \text{atan2}(y - y_{center}, x - x_{center}) + \frac{\pi}{2}$ (chuẩn hóa về khoảng $[0, 2\pi]$).
+  4. Lặp qua các góc quét tích lũy để xác định lát cắt được chọn, kích hoạt hiệu ứng nảy phóng to, phát sáng Glow (`MaskFilter.blur`) và rung phản hồi xúc giác (`HapticFeedback.selectionClick()`).
+
+---
+
+## 6. HƯỚNG DẪN CÀI ĐẶT & KHỞI CHẠY (LOCAL & CLOUD)
+
+### 1. Truy cập Live Demo trên Vercel:
+Mở trình duyệt bất kỳ (trên điện thoại hoặc máy tính) tại địa chỉ:  
+👉 **[https://ocr-expense-tracker-three.vercel.app](https://ocr-expense-tracker-three.vercel.app)**
+
+### 2. Khởi chạy ứng dụng Flutter Native cục bộ:
+```bash
+# Cài đặt các gói phụ thuộc
+flutter pub get
+
+# Chạy kiểm thử tự động
+flutter test
+
+# Khởi chạy trên máy thật hoặc thiết bị giả lập
+flutter run
+```
+
+### 3. Khởi chạy máy chủ Web Simulator cục bộ:
+```bash
+# Chạy máy chủ Node.js cục bộ
+node server.js
+
+# Truy cập trình duyệt tại:
+# - Máy tính: http://localhost:5050
+# - Thiết bị di động cùng mạng Wi-Fi: http://<IP_MÁY_TÍNH>:5050
+```
+
+### 4. Chạy kịch bản kiểm thử độc lập 10 hóa đơn mẫu:
+```bash
+node test-verification.js
+```
