@@ -1,8 +1,15 @@
 {
-  "name": "ocr-expense-tracker",
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/", "destination": "/web_demo/index.html" },
-    { "source": "/(.*)", "destination": "/web_demo/$1" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "web_demo/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/web_demo/$1"
+    }
   ]
 }

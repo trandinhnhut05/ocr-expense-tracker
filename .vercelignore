@@ -1,0 +1,7 @@
+server.js
+android/
+assets/
+lib/
+test/
+.metadata
+pubspec.lock
